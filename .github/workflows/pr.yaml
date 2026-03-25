@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout the code
-        run: actions/checkout@v6
+        run: actions/checkout@v4
       - name: compile the code
         run: mvn compile
       - name: test the code

@@ -112,6 +112,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v3
       - name: Azure Login

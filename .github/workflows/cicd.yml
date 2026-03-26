@@ -71,8 +71,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
-            ${{ env.IMAGE_NAME }}:latest
+            lucky89788/hrms:latest
+            lucky89788/hrms:${{ github.sha }}
 
   # ─────────────────────────────────────────
   # JOB 3: Provision AKS with Terraform

@@ -1,44 +1,37 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.90"
-    }
-  }
+# provider "azurerm" {
+#   features {}
+# }
+
+# Resource Group
+resource "azurerm_resource_group" "rg" {
+  name     = "myRG"
+  location = "centralindia"
 }
 
-provider "azurerm" {
-  features {}
-}
-
-resource "azurerm_resource_group" "hrms" {
-  name     = var.resource_group_name
-  location = var.location
-}
-
-resource "azurerm_kubernetes_cluster" "hrms" {
-  name                = var.cluster_name
-  location            = azurerm_resource_group.hrms.location
-  resource_group_name = azurerm_resource_group.hrms.name
-  dns_prefix          = var.cluster_name
+# AKS Cluster
+resource "azurerm_kubernetes_cluster" "aks" {
+  name                = "myAKSCluster"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  dns_prefix          = "myakscluster"
 
   default_node_pool {
-    name       = "default"
-    node_count = var.node_count
-    vm_size    = var.vm_size
+    name       = "nodepool1"
+    node_count = 1
+    vm_size    = "Standard_D2s_v3"
   }
 
   identity {
     type = "SystemAssigned"
   }
 
-  network_profile {
-    network_plugin    = "azure"
-    load_balancer_sku = "standard"
-  }
-
   tags = {
-    environment = var.environment
-    project     = "hrms"
+    Environment = "DevOps-Learning"
   }
+}
+
+# Output kubeconfig
+output "kube_config" {
+  value     = azurerm_kubernetes_cluster.aks.kube_config_raw
+  sensitive = true
 }

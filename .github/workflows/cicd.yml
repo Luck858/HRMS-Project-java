@@ -131,9 +131,13 @@ jobs:
         run: |
          az aks get-credentials --resource-group myRG --name myAKSCluster --overwrite-existing
 
-
-
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
+      - name: Check Kubernetes Status
+        run: |
+           kubectl get pods
+           kubectl get deployments
+           kubectl get svc
+           kubectl rollout status deployment/hrms

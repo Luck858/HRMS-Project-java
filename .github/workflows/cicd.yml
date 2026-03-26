@@ -1,5 +1,6 @@
 ---
 name: HRMS CI/CD Pipeline
+
 on:
   push:
     branches: [main]
@@ -9,14 +10,11 @@ env:
   TF_WORKING_DIR: terraform
 
 jobs:
-  # JOB 1: Build & Push Docker Image
-
-  JOB 1: Build & Test
-
+  # JOB 1: Build & Test
   build:
     name: Build & Test
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,7 +40,6 @@ jobs:
           retention-days: 1
 
   # JOB 2: Build & Push Docker Image
-
   build-image:
     name: Build & Push image
     runs-on: ubuntu-latest
@@ -75,7 +72,6 @@ jobs:
             lucky89788/hrms:${{ github.sha }}
 
   # JOB 3: Provision AKS with Terraform
-
   terraform:
     runs-on: ubuntu-latest
     needs: [build, build-image]
@@ -103,22 +99,21 @@ jobs:
         working-directory: terraform
         run: terraform apply -auto-approve tfplan
 
-  JOB 4: Deploy to AKS
-
+  # JOB 4: Deploy to AKS
   deploy-to-aks:
     name: Deploy to AKS
     runs-on: ubuntu-latest
+    needs: terraform
     if: github.ref == 'refs/heads/main'
 
     steps:
-     
       - name: Setup Kubectl
         uses: azure/setup-kubectl@v3
+
       - name: Azure Login
         uses: azure/login@v2
         with:
-           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Configure Kubeconfig
         run: |
@@ -127,15 +122,16 @@ jobs:
 
       - name: Get AKS Credentials
         run: |
-         az aks get-credentials --resource-group myRG --name myAKSCluster --overwrite-existing
+          az aks get-credentials --resource-group myRG --name myAKSCluster --overwrite-existing
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
+
       - name: Check Kubernetes Status
         run: |
-           kubectl get pods
-           kubectl get deployments
-           kubectl get svc
-           kubectl rollout status deployment/hrms
+          kubectl get pods
+          kubectl get deployments
+          kubectl get svc
+          kubectl rollout status deployment/hrms

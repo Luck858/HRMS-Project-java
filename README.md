@@ -779,3 +779,5 @@ kubectl get deployments            # Check deployment
 kubectl logs -f <pod-name>         # View logs
 kubectl rollout undo deployment/hrms-deployment  # Rollback
 ```
+
+
